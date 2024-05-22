@@ -2,7 +2,7 @@ from flask import Blueprint, request, redirect, url_for, session, jsonify
 import requests
 import json
 import os
-from ..vision import detectBadStuff  # Adjust this import to your actual module
+from vision import detectBadStuff  # Adjust this import to your actual module
 
 instagram_blueprint = Blueprint('instagram', __name__)
 
@@ -70,10 +70,12 @@ def profile():
     except requests.exceptions.RequestException as e:
         return f"Error fetching media: {e}"
 
-    # Constructing HTML for media items
+    # Constructing HTML for media items and scan each image
     media_html = ''
     for item in media:
+        scan_result = detectBadStuff(item["media_url"])  # Scan the image
         media_html += f'<img src="{item["media_url"]}" alt="{item.get("caption", "")}" style="width:150px;"><br>'
+        media_html += f'<p>Scan result: {scan_result}</p>'  # Display scan results
 
     return f'''
         <h1>Logged in as {user_info["username"]}</h1>
