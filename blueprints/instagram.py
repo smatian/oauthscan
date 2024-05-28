@@ -117,12 +117,6 @@ def profile():
     '''
 
 
-@instagram_blueprint.route('/scan_image', methods=['POST'])
-def scan_image():
-    data = request.get_json()
-    image_url = data.get('image_url')
-    result = detectBadStuff(image_url)  # Assuming this function returns some JSON
-    return jsonify({'result': result})
 
 
 @instagram_blueprint.route('/scan_image', methods=['POST'])
