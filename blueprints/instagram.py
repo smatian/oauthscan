@@ -45,35 +45,6 @@ def callback():
     session['user_id'] = user_id
     return redirect(url_for('instagram.profile'))
 
-@instagram_blueprint.route('/profile')
-def profile():
-    access_token = session.get('access_token')
-    user_id = session.get('user_id')
-    
-    if not access_token or not user_id:
-        return 'Error: User not logged in'
-    
-    user_info_url = f"https://graph.instagram.com/{user_id}?fields=id,username,account_type,media_count&access_token={access_token}"
-    user_info_response = requests.get(user_info_url)
-    if user_info_response.status_code != 200:
-        return f"Error fetching user info: {user_info_response.text}"
-    user_info = user_info_response.json()
-
-    media_url = f"https://graph.instagram.com/{user_id}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,children&access_token={access_token}"
-    media_response = requests.get(media_url)
-    if media_response.status_code != 200:
-        return f"Error fetching media: {media_response.text}"
-    media = media_response.json().get('data', [])
-
-    media_html = ''.join([f'<img src="{item["media_pk"]}" alt="{item.get("caption", "")}" style="width:150px;" id="img-{item["id"]}"><br><p id="result-{item["id"]}">Pending scan...</p>' for item in media])
-    
-    return f'''
-        <h1>Logged in as {user_info["username"]}</h1>
-        <p>Account Type: {user_info["account_type"]}</p>
-        <p>Media Count: {user_info["media_count"]}</p>
-        <div>{media_html}</div>
-        <script src="/static/js/scan_images.js"></script>
-    '''
 
 
 @instagram_blueprint.route('/profile')
@@ -106,16 +77,15 @@ def profile():
     media_html = ''
     for item in media:
         media_html += f'<div><img src="{item["media_url"]}" alt="{item.get("caption", "")}" style="width:150px;" id="image-{item["id"]}">'
-        media_html += f'<p>Scan result: <span id="scan-result-{item["id"]}">Scanning...</span></p></div>'
+        media_html += f'<p>Scan result: <span id="scan-result-{item["id"]}">Pending scan...</span></p></div>'
 
     return f'''
         <h1>Logged in as {user_info["username"]}</h1>
         <p>Account Type: {user_info["account_type"]}</p>
         <p>Media Count: {user_info["media_count"]}</p>
         <div>{media_html}</div>
-        <script src="/static/js/scan_images.js"></script>  <!-- Make sure this JS file is correctly linked and available -->
+        <script src="/static/js/scan_images.js"></script>
     '''
-
 
 
 

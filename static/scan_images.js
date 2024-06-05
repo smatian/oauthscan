@@ -1,7 +1,9 @@
-document.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', function() {
     const images = document.querySelectorAll('img');
-    images.forEach(img => {
-        const imgId = img.id.split('-')[1]; // Extract ID from the img element
+    images.forEach(function(img) {
+        const imageId = img.id.split('-')[1];
+        const scanResultElement = document.getElementById(`scan-result-${imageId}`);
+
         fetch('/scan_image', {
             method: 'POST',
             headers: {
@@ -11,12 +13,11 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            const resultElement = document.getElementById(`result-${imgId}`);
-            resultElement.innerHTML = `Scan result: ${data.result}`;
+            scanResultElement.textContent = data.result;
         })
         .catch(error => {
-            const resultElement = document.getElementById(`result-${imgId}`);
-            resultElement.innerHTML = `Error scanning image: ${error}`;
+            scanResultElement.textContent = 'Error scanning image';
+            console.error('Error scanning image:', error);
         });
     });
 });
